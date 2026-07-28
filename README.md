@@ -1,19 +1,8 @@
 # White Blood Cell Detection and Classification for Edge Device Deployment
 
-**Team B14** | Amrita School of AI | Semester 6
+Amrita School of AI | Semester 6
 
 Automated detection and classification of White Blood Cells using YOLOv11 with hybrid lightweight architectures designed for real-time edge device inference.
-
----
-
-## Team Members
-
-| Name | Roll Number |
-|---|---|
-| Aakash Raj V | CB.AI.U4AID23106 |
-| R Darani Karthik | CB.AI.U4AID23137 |
-| Mahizhan S | CB.AI.U4AID23157 |
-| Pavani Akshaya | CB.AI.U4AID23159 |
 
 ---
 
