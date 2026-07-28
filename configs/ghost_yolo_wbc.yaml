@@ -1,0 +1,54 @@
+# Hybridised Model 1 — Modified YOLOv11 Architecture 1
+# Ghost-optimized backbone (GhostConv / C3Ghost) + standard FPN/PAN neck.
+# ~1.6M params, 5.4 GFLOPs, mAP50 0.987
+#
+# Before loading, register custom modules with Ultralytics:
+#
+#   import ultralytics.nn.modules as um
+#   from modules.ghost_modules import GhostConv, C3Ghost
+#   um.GhostConv, um.C3Ghost = GhostConv, C3Ghost
+#
+# Training command:
+#   yolo detect train model=configs/ghost_yolo_wbc.yaml \
+#       data=data/wbccd.yaml epochs=500 imgsz=800 batch=16
+
+nc: 5  # basophil, eosinophil, lymphocyte, monocyte, neutrophil
+scales:
+  n: [0.50, 0.25, 1024]
+
+# --------------------------------------------------------------------------
+# Ghost-Optimized Backbone
+# --------------------------------------------------------------------------
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv,      [64, 3, 2]]                   # 0   P1/2
+  - [-1, 1, GhostConv, [128, 3, 2]]                  # 1   P2/4
+  - [-1, 1, C3Ghost,   [256, 1, True, 1, 0.25]]      # 2
+  - [-1, 1, GhostConv, [256, 3, 2]]                  # 3   P3/8
+  - [-1, 1, C3Ghost,   [512, 1, True, 1, 0.25]]      # 4   -> neck (small objects)
+  - [-1, 1, GhostConv, [512, 3, 2]]                  # 5   P4/16
+  - [-1, 1, C3Ghost,   [512, 1, True, 1, 0.5]]       # 6   -> neck (medium objects)
+  - [-1, 1, GhostConv, [1024, 3, 2]]                 # 7   P5/32
+  - [-1, 1, C3Ghost,   [1024, 1, True, 1, 0.5]]      # 8   -> neck (large objects)
+
+# --------------------------------------------------------------------------
+# Neck: Top-Down FPN + Bottom-Up PAN
+# --------------------------------------------------------------------------
+head:
+  - [-1,      1, nn.Upsample, [None, 2, "nearest"]]  # 9   upsample x2
+  - [[-1, 6], 1, Concat,      [1]]                   # 10  concat P4
+  - [-1,      1, C3Ghost,     [512, 1, False, 1, 0.5]]  # 11
+
+  - [-1,      1, nn.Upsample, [None, 2, "nearest"]]  # 12  upsample x2
+  - [[-1, 4], 1, Concat,      [1]]                   # 13  concat P3
+  - [-1,      1, C3Ghost,     [256, 1, False, 1, 0.5]]  # 14  -> Detect (small)
+
+  - [-1,       1, GhostConv,  [256, 3, 2]]           # 15  downsample
+  - [[-1, 11], 1, Concat,     [1]]                   # 16  concat with 11
+  - [-1,       1, C3Ghost,    [512, 1, False, 1, 0.5]]  # 17  -> Detect (medium)
+
+  - [-1,      1, GhostConv,   [512, 3, 2]]           # 18  downsample
+  - [[-1, 8], 1, Concat,      [1]]                   # 19  concat with 8
+  - [-1,      1, C3Ghost,     [1024, 1, False, 1, 0.5]]  # 20  -> Detect (large)
+
+  - [[14, 17, 20], 1, Detect, [nc]]                  # 21  Detect (P3, P4, P5)

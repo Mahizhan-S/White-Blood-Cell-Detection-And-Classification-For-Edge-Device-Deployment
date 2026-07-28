@@ -160,6 +160,10 @@ White-Blood-Cell-Detection-And-Classification-For-Edge-Device-Deployment/
 |-- Project.ipynb                 # Main training and evaluation notebook
 |-- requirements.txt              # Python dependencies
 |
+|-- configs/
+|   |-- ghost_yolo_wbc.yaml       # Hybridised Model 1: GhostConv + C3Ghost backbone (1.6M params)
+|   `-- lightweight_yolo_wbc.yaml # Hybridised Model 2: ultra-lightweight single-scale head (0.18M params)
+|
 |-- data/
 |   `-- wbccd.yaml                # Dataset configuration (paths and class names)
 |
@@ -205,8 +209,11 @@ OUTPUT_PATH = "/path/to/Combined_L"
 # Baseline YOLOv11n
 yolo detect train model=yolo11n.pt data=data/wbccd.yaml epochs=500 imgsz=800 batch=16
 
-# Hybridised GhostConv architecture
+# Hybridised Model 1 — GhostConv architecture (1.6M params)
 yolo detect train model=configs/ghost_yolo_wbc.yaml data=data/wbccd.yaml epochs=500 imgsz=800 batch=16
+
+# Hybridised Model 2 — Ultra-lightweight single-scale head (0.18M params)
+yolo detect train model=configs/lightweight_yolo_wbc.yaml data=data/wbccd.yaml epochs=500 imgsz=800 batch=16
 ```
 
 ### Inference
