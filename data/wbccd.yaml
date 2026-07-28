@@ -1,0 +1,13 @@
+
+
+path: data/WBCDD2
+
+train: images/train
+val: images/val
+
+names:
+  0: Neutrophil
+  1: Monocyte
+  2: Eosinophil
+  3: Lymphocyte
+  4: Basophil

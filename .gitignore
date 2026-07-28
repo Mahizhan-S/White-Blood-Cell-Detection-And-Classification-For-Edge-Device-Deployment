@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Dataset directories (too large for git)
+WBCDD/
+WBCDD2/
+Combined_L/
+Combined_2/
+raabin.v1i.yolov11/
+wbc.v1i.yolov11/
+*/images/
+*/labels/
+
+# YOLO training runs (large files)
+runs/
+
+# Large model files (use Git LFS or release assets)
+*.pt
+*.onnx
+*.engine
+*.tflite
+*.torchscript
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+wandb/
+
+# Misc
+*.tmp
+*.cache
